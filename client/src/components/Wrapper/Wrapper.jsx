@@ -19,7 +19,7 @@ const Wrapper = ({ results, query }) => {
               title={result.title}
               description={result.description}
               image={result.image}
-              source={result.source}
+              query={query} // Pass the query prop
             />
           ))
         ) : (
@@ -37,10 +37,9 @@ Wrapper.propTypes = {
       title: PropTypes.string.isRequired,
       description: PropTypes.string,
       image: PropTypes.string,
-      source: PropTypes.string,
     })
   ).isRequired,
-  query: PropTypes.string,
+  query: PropTypes.string.isRequired,
 };
 
 export default Wrapper;
