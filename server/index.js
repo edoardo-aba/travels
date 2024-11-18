@@ -58,18 +58,18 @@ const solrClient = new SolrNode({
 // Array of websites to scrape
 const websites = [
     { url: 'https://www.getyourguide.it/alba-l1166/tour-a-piedi-della-citta-storica-di-alba-t450835', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/alba-l1166/esperienza-di-caccia-al-tartufo-delle-langhe-t453401', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/alba-l1166/degustazione-di-vini-e-abbinamenti-gastronomici-nelle-langhe-e-vicino-ad-alba-t853997', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/alba-l1166/tour-di-caccia-al-tartufo-al-tramonto-t450016', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/barolo-l2679/degustazione-della-cantina-del-barolo-citta-di-alba-e-castello-dell-unesco-t588243', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/alba-l1166/tour-a-piedi-e-degustazione-di-alba-cibo-e-storia-t445000', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/barolo-l2679/tour-di-degustazione-di-barolo-e-barbaresco-t451748', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/alba-l1166/alba-tour-in-bici-elettrica-con-picnic-e-degustazione-di-vini-t437858', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/piemonte-l598/tour-gastronomico-del-piemonte-t153951', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/bra-italia-l3427/dogliani-degustazione-di-7-vini-nel-cuore-delle-langhe-t624703', scraper: scrape1 },
-    // { url: 'https://www.getyourguide.it/neive-l146393/langhe-degustazione-di-6-bicchieri-di-barolo-e-barbaresco-t442705', scraper: scrape1 },
-    // { url: 'https://www.tripadvisor.com/Attraction_Review-g194664-d8820143-Reviews-Alba_International_White_Truffle_Fair-Alba_Province_of_Cuneo_Piedmont.html', scraper: scrape2 },
-    // { url: 'https://www.viator.com/tours/Turin/Torino-to-the-Langhe-a-Private-Barolo-and-Barbaresco-Wine-Tour/d802-223357P2', scraper: scrape3 }
+    { url: 'https://www.getyourguide.it/alba-l1166/esperienza-di-caccia-al-tartufo-delle-langhe-t453401', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/alba-l1166/degustazione-di-vini-e-abbinamenti-gastronomici-nelle-langhe-e-vicino-ad-alba-t853997', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/alba-l1166/tour-di-caccia-al-tartufo-al-tramonto-t450016', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/barolo-l2679/degustazione-della-cantina-del-barolo-citta-di-alba-e-castello-dell-unesco-t588243', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/alba-l1166/tour-a-piedi-e-degustazione-di-alba-cibo-e-storia-t445000', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/barolo-l2679/tour-di-degustazione-di-barolo-e-barbaresco-t451748', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/alba-l1166/alba-tour-in-bici-elettrica-con-picnic-e-degustazione-di-vini-t437858', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/piemonte-l598/tour-gastronomico-del-piemonte-t153951', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/bra-italia-l3427/dogliani-degustazione-di-7-vini-nel-cuore-delle-langhe-t624703', scraper: scrape1 },
+    { url: 'https://www.getyourguide.it/neive-l146393/langhe-degustazione-di-6-bicchieri-di-barolo-e-barbaresco-t442705', scraper: scrape1 },
+    { url: 'https://www.tripadvisor.com/Attraction_Review-g194664-d8820143-Reviews-Alba_International_White_Truffle_Fair-Alba_Province_of_Cuneo_Piedmont.html', scraper: scrape2 },
+    { url: 'https://www.viator.com/tours/Turin/Torino-to-the-Langhe-a-Private-Barolo-and-Barbaresco-Wine-Tour/d802-223357P2', scraper: scrape3 }
 ];
 
 // Puppeteer-based scraper for Website 1
@@ -163,7 +163,7 @@ async function syncMongoWithSolr() {
         console.log('Starting Solr sync process...');
 
         // Construct the delete command
-        const deleteCommand = { delete: { query: 'title:alba' } };
+        const deleteCommand = { delete: { query: 'title:*' } };
 
         // Send the delete request
         const deleteResponse = await axios.post(solrUrl, deleteCommand, {
@@ -223,15 +223,15 @@ async function syncMongoWithSolr() {
 // Search API
 // Search API
 app.get('/api/search', async (req, res) => {
-    const title = req.query.title;
-    console.log('Search Title:', title);
-    if (!title) {
-        return res.status(400).json({ error: 'Query parameter "title" is required' });
+    const text = req.query.text;
+    console.log('Search Title:', text);
+    if (!text) {
+        return res.status(400).json({ error: 'Query parameter "query" is required' });
     }
 
     try {
         // Send the query to Solr using Axios GET request
-        const query = `title:${title} OR description:${title}`;
+        const query = `title:${text} OR description:${text}`;
         const response = await axios.get(`http://localhost:8983/solr/websites/select`, {
             params: {
                 q: query,
