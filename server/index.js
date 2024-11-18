@@ -221,37 +221,55 @@ async function syncMongoWithSolr() {
 }
 
 // Search API
+// Search API
 app.get('/api/search', async (req, res) => {
-    const query = req.query.q;
-    if (!query) {
-        return res.status(400).json({ error: 'Query parameter q is required' });
+    const title = req.query.title;
+    console.log('Search Title:', title);
+    if (!title) {
+        return res.status(400).json({ error: 'Query parameter "title" is required' });
     }
 
     try {
-        const searchQuery = solrClient.query()
-            .q(query)
-            .fl('id,title,description,image,source')
-            .start(0)
-            .rows(10);
+        // Send the query to Solr using Axios GET request
+        const response = await axios.get(`http://localhost:8983/solr/websites/select`, {
+            params: {
+                q: `title:${title}`,
+                fl: 'id,title,description,image,source',
+                start: 0,
+                rows: 10,
+                wt: 'json',
+            },
+        });
 
-        const result = await solrClient.search(searchQuery);
+        console.log('Solr Response:', response.data);
 
-        console.log('Search Results:', result);
+        // Process the Solr response
+        const docs = response.data.response.docs;
 
-        // const hits = result.response.docs.map(doc => ({
-        //     id: doc.id,
-        //     title: doc.title,
-        //     description: doc.description,
-        //     image: doc.image,
-        //     source: doc.source,
-        // }));
+        const hits = docs.map(doc => ({
+            id: doc.id,
+            title: Array.isArray(doc.title) ? doc.title[0] : doc.title,
+            description: Array.isArray(doc.description) ? doc.description[0] : doc.description,
+            image: doc.image,
+            source: doc.source,
+        }));
 
-        // res.json({ results: hits });
+        res.json({ results: hits });
     } catch (error) {
-        console.error('Error searching in Solr:', error.message);
-        res.status(500).json({ error: 'Search failed', details: error.message });
+        if (error.response) {
+            console.error('Solr Error Response:', error.response.data);
+            console.error('Status Code:', error.response.status);
+            res.status(500).json({ error: 'Search failed', details: error.response.data });
+        } else if (error.request) {
+            console.error('No response received from Solr:', error.request);
+            res.status(500).json({ error: 'Search failed', details: 'No response received from Solr' });
+        } else {
+            console.error('Error searching in Solr:', error.message);
+            res.status(500).json({ error: 'Search failed', details: error.message });
+        }
     }
 });
+
 
 // Schedule scraping every hour using node-cron
 cron.schedule('0 * * * *', async () => {
