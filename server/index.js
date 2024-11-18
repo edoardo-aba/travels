@@ -44,6 +44,7 @@ const websiteSchema = new mongoose.Schema({
     description: String,
     image: String,
     source: String,
+    relevance: { type: Number, default: 100 }, // Added relevance field
 });
 const Website = mongoose.model('Website', websiteSchema);
 
@@ -191,6 +192,7 @@ async function syncMongoWithSolr() {
             description: doc.description,
             image: doc.image,
             source: doc.source,
+            relevance: doc.relevance, // Include relevance
         }));
 
         const addResponse = await axios.post(solrUrl, { add: addCommands }, {
@@ -225,7 +227,7 @@ app.get('/api/search', async (req, res) => {
     const text = req.query.text;
     console.log('Search Title:', text);
     if (!text) {
-        return res.status(400).json({ error: 'Query parameter "query" is required' });
+        return res.status(400).json({ error: 'Query parameter "text" is required' });
     }
 
     try {
@@ -234,9 +236,10 @@ app.get('/api/search', async (req, res) => {
         const response = await axios.get(`http://localhost:8983/solr/websites/select`, {
             params: {
                 q: query,
-                fl: 'id,title,description,image,source',
+                fl: 'id,title,description,image,source,relevance', // Include relevance
                 start: 0,
                 rows: 10,
+                sort: 'relevance desc', // Sort by relevance
                 wt: 'json',
             },
         });
@@ -252,6 +255,7 @@ app.get('/api/search', async (req, res) => {
             description: Array.isArray(doc.description) ? doc.description[0] : doc.description,
             image: doc.image,
             source: doc.source,
+            relevance: doc.relevance, // Include relevance if needed
         }));
 
         res.json({ results: hits });
@@ -270,6 +274,61 @@ app.get('/api/search', async (req, res) => {
     }
 });
 
+// Feedback API
+app.post('/api/feedback', async (req, res) => {
+    const { documentId, feedbackType } = req.body;
+
+    if (!documentId || !feedbackType) {
+        return res.status(400).json({ error: 'documentId and feedbackType are required' });
+    }
+
+    try {
+        // Update relevance in MongoDB
+        const increment = feedbackType === 'positive' ? 1 : -1;
+        const updatedDocument = await Website.findByIdAndUpdate(
+            documentId,
+            { $inc: { relevance: increment } },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedDocument) {
+            return res.status(404).json({ error: 'Document not found' });
+        }
+
+        // Prepare document for Solr update
+        const solrDoc = {
+            id: documentId,
+            title: updatedDocument.title,
+            description: updatedDocument.description,
+            image: updatedDocument.image,
+            source: updatedDocument.source,
+            relevance: updatedDocument.relevance,
+        };
+
+        // Update document in Solr
+        const updateResponse = await axios.post(solrUrl, { add: { doc: solrDoc, overwrite: true } }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        console.log('Solr Update Response:', updateResponse.data);
+
+        // Commit changes
+        const commitResponse = await axios.post(solrUrl, { commit: {} }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        console.log('Solr Commit Response:', commitResponse.data);
+
+        res.status(200).json({ message: 'Feedback recorded' });
+    } catch (error) {
+        console.error('Error handling feedback:', error.message);
+        if (error.response) {
+            console.error('Solr Error Response:', error.response.data);
+            return res.status(500).json({ error: 'Error updating Solr', details: error.response.data });
+        }
+        res.status(500).json({ error: 'Server error', details: error.message });
+    }
+});
 
 // Schedule scraping every hour using node-cron
 cron.schedule('0 * * * *', async () => {

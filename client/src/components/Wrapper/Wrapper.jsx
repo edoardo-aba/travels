@@ -1,3 +1,4 @@
+// Wrapper.js
 import PropTypes from 'prop-types';
 import Card from '../Card/Card';
 import './Wrapper.css';
@@ -11,13 +12,14 @@ const Wrapper = ({ results, query, loading }) => {
     <div className="wrapper">
       <h2>Search Results for "{query}":</h2>
       {loading ? (
-        <div className="loader"></div> 
+        <div className="loader"></div>
       ) : (
         <div className="card-container">
           {results && results.length > 0 ? (
             results.map((result) => (
               <Card
                 key={result.id}
+                id={result.id}
                 title={result.title}
                 description={result.description}
                 image={result.image}
@@ -40,6 +42,7 @@ Wrapper.propTypes = {
       title: PropTypes.string.isRequired,
       description: PropTypes.string,
       image: PropTypes.string,
+      relevance: PropTypes.number, // Include if needed
     })
   ).isRequired,
   query: PropTypes.string.isRequired,

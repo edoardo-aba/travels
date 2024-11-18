@@ -1,8 +1,9 @@
+import { useState } from 'react'; // Import useState
 import PropTypes from 'prop-types';
 import DOMPurify from 'dompurify';
 import './Card.css';
 
-const Card = ({ title, description, image, query }) => {
+const Card = ({ id, title, description, image, query }) => { // Added id prop
   const descriptionText = description || '';
   const truncatedDescription = `${descriptionText.slice(0, 120)}...`;
 
@@ -91,6 +92,38 @@ const Card = ({ title, description, image, query }) => {
   // Prepare the snippet
   const snippet = getSnippetWithQueryTerms(title, descriptionText, query, 150);
 
+  // Add state to track feedback status
+  const [feedbackGiven, setFeedbackGiven] = useState(false);
+
+  // Function to handle thumbs up
+  const handleThumbsUp = async () => {
+    await sendFeedback(id, 'positive');
+    setFeedbackGiven(true);
+  };
+
+  // Function to handle thumbs down
+  const handleThumbsDown = async () => {
+    await sendFeedback(id, 'negative');
+    setFeedbackGiven(true);
+  };
+
+  const sendFeedback = async (documentId, feedbackType) => {
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId, feedbackType }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    } catch (error) {
+      console.error('Error sending feedback:', error);
+      // Optionally handle error, e.g., display a message to the user
+    }
+  };
+
   return (
     <div className="card">
       <div className="card-image">
@@ -106,12 +139,22 @@ const Card = ({ title, description, image, query }) => {
             dangerouslySetInnerHTML={{ __html: snippet }}
           ></p>
         </div>
+        {/* Feedback buttons */}
+        <div className="feedback-buttons">
+          <button onClick={handleThumbsUp} disabled={feedbackGiven}>
+            👍
+          </button>
+          <button onClick={handleThumbsDown} disabled={feedbackGiven}>
+            👎
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 Card.propTypes = {
+  id: PropTypes.string.isRequired, // Added id to propTypes
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   image: PropTypes.string.isRequired,

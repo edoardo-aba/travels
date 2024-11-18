@@ -1,3 +1,4 @@
+// fetchSearchResults.js
 import axios from 'axios';
 
 export const fetchSearchResults = async (text) => {
@@ -6,13 +7,14 @@ export const fetchSearchResults = async (text) => {
       params: { text },
     });
 
-    // Extract `results` and map only the required fields (e.g., `title`)
+    // Extract `results` and map the required fields, including `relevance`
     const results = response.data.results.map((item) => ({
       id: item.id,
-      title: item.title, // Use title as the primary field
+      title: item.title,
       description: item.description,
       image: item.image,
       source: item.source,
+      relevance: item.relevance, // Include relevance
     }));
 
     return results;
