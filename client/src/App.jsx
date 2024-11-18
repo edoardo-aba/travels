@@ -5,21 +5,28 @@ import Wrapper from './components/Wrapper/Wrapper';
 
 function App() {
   const [results, setResults] = useState([]);
-  const [searchedQuery, setSearchedQuery] = useState(''); // Add this line
+  const [searchedQuery, setSearchedQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Function to handle search results and update searchedQuery
   const handleSearchResults = (results, query) => {
-    setResults(results);
-    setSearchedQuery(query); // Update searchedQuery when search is performed
+    setSearchedQuery(query);
+    // Wait at least 1 second before showing results
+    setTimeout(() => {
+      setResults(results);
+      setLoading(false);
+    }, 500);
+  };
+
+  const handleSearchStart = () => {
+    setLoading(true);
+    setResults([]); // Optionally clear previous results
   };
 
   return (
     <>
       <Header />
-      {/* Pass handleSearchResults to SearchBar */}
-      <SearchBar onSearch={handleSearchResults} />
-      {/* Pass searchedQuery to Wrapper */}
-      <Wrapper results={results} query={searchedQuery} />
+      <SearchBar onSearch={handleSearchResults} onSearchStart={handleSearchStart} />
+      <Wrapper results={results} query={searchedQuery} loading={loading} />
     </>
   );
 }

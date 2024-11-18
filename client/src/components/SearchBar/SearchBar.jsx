@@ -3,16 +3,18 @@ import PropTypes from 'prop-types';
 import './SearchBar.css';
 import { fetchSearchResults } from '../../api';
 
-const SearchBar = ({ onSearch }) => {
+const SearchBar = ({ onSearch, onSearchStart }) => {
   const [query, setQuery] = useState('');
 
   const handleSearch = async () => {
-    if (!query.trim()) return; // Prevent empty queries
+    if (!query.trim()) return;
+    onSearchStart();
     try {
       const results = await fetchSearchResults(query);
-      onSearch(results, query); // Pass results and query to App.js
+      onSearch(results, query);
     } catch (error) {
       console.error('Failed to fetch results.', error);
+      onSearch([], query);
     }
   };
 
@@ -43,7 +45,8 @@ const SearchBar = ({ onSearch }) => {
 };
 
 SearchBar.propTypes = {
-  onSearch: PropTypes.func.isRequired, // Updated prop name
+  onSearch: PropTypes.func.isRequired,
+  onSearchStart: PropTypes.func.isRequired,
 };
 
 export default SearchBar;
