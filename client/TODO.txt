@@ -3,3 +3,4 @@
 - create card long to visualize the results,
 - add the key words to the card
 - add loader when fetching to make it look real
+- grid for images

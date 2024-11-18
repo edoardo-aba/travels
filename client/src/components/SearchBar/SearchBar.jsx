@@ -1,17 +1,16 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import './SearchBar.css';
-
 import { fetchSearchResults } from '../../api';
 
-const SearchBar = ({ onResults }) => {
+const SearchBar = ({ onSearch }) => {
   const [query, setQuery] = useState('');
 
   const handleSearch = async () => {
     if (!query.trim()) return; // Prevent empty queries
     try {
       const results = await fetchSearchResults(query);
-      onResults(results); // Pass results to the parent component
+      onSearch(results, query); // Pass results and query to App.js
     } catch (error) {
       console.error('Failed to fetch results.', error);
     }
@@ -44,7 +43,7 @@ const SearchBar = ({ onResults }) => {
 };
 
 SearchBar.propTypes = {
-  onResults: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired, // Updated prop name
 };
 
 export default SearchBar;

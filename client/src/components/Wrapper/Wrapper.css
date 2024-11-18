@@ -1,11 +1,17 @@
 .wrapper {
     padding: 16px;
-  }
-  
-  .card-container {
+}
+
+.wrapper>h2 {
+    
+    margin-left: 100px ;
+    /* Add left margin for the h2 element */
+}
+
+.card-container {
     display: flex;
     flex-wrap: wrap;
+    flex-direction: column;
     gap: 16px;
     justify-content: center;
-  }
-  
+}
