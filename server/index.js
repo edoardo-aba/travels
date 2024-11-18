@@ -4,6 +4,9 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const SolrNode = require('solr-node'); // Solr client
 const cron = require('node-cron');
+const axios = require('axios');
+
+const solrUrl = 'http://localhost:8983/solr/websites/update';
 
 puppeteer.use(StealthPlugin());
 
@@ -157,55 +160,63 @@ async function scrapeWebsites() {
 // Sync MongoDB data with Solr
 async function syncMongoWithSolr() {
     try {
+        console.log('Starting Solr sync process...');
 
-           // Construct the delete command
-           const deleteCommand = {
-            delete: {
-                query: 'title:alba'
-            }
-        };
+        // Construct the delete command
+        const deleteCommand = { delete: { query: 'title:alba' } };
 
         // Send the delete request
-        const deleteResponse = await fetch('http://localhost:8983/solr/websites/update', {
-            method: 'POST',
+        const deleteResponse = await axios.post(solrUrl, deleteCommand, {
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(deleteCommand),
         });
 
-        const deleteResult = await deleteResponse.json();
-        console.log('Delete Response:', deleteResult);
+        console.log('Delete Response:', deleteResponse.data);
 
         // Commit the changes
-        const commitResponse = await fetch('http://localhost:8983/solr/websites/update', {
-            method: 'POST',
+        const commitResponse = await axios.post(solrUrl, { commit: {} }, {
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ commit: {} }),
         });
 
-        const commitResult = await commitResponse.json();
-        console.log('Commit Response:', commitResult);
-
+        console.log('Commit Response:', commitResponse.data);
 
         // Fetch data from MongoDB
         const websites = await Website.find();
 
+        console.log(`Fetched ${websites.length} records from MongoDB.`);
 
         // Add data to Solr
-        for (const doc of websites) {
-            const solrDoc = {
-                id: doc._id.toString(),
-                title: doc.title,
-                description: doc.description,
-                image: doc.image,
-                source: doc.source,
-            };
-            await solrClient.update({ add: solrDoc });
-        }
+        const addCommands = websites.map(doc => ({
+            id: doc._id.toString(),
+            title: doc.title,
+            description: doc.description,
+            image: doc.image,
+            source: doc.source,
+        }));
 
-        await solrClient.update({ commit: {} });
+        const addResponse = await axios.post(solrUrl, { add: addCommands }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        console.log('Add Response:', addResponse.data);
+
+        // Final commit after adding documents
+        const finalCommitResponse = await axios.post(solrUrl, { commit: {} }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        console.log('Final Commit Response:', finalCommitResponse.data);
+
         console.log('MongoDB data successfully synced with Solr.');
     } catch (error) {
-        console.error('Error syncing with Solr:', error.message);
+        // Improved error handling with Axios
+        if (error.response) {
+            console.error('Error Response:', error.response.data);
+            console.error('Status Code:', error.response.status);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Request Error:', error.message);
+        }
     }
 }
 
