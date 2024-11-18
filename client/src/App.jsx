@@ -1,13 +1,19 @@
+import { useState } from 'react';
 import './App.css';
-import SearchBar from './components/SearchBar/SearchBar';
-import Header from './components/Header/Header';
+import '@fortawesome/fontawesome-free/css/all.css'; // Import Font Awesome globally
 
+import Header from './components/Header/Header';
+import SearchBar from './components/SearchBar/SearchBar';
+import Wrapper from './components/Wrapper/Wrapper';
 
 function App() {
+  const [results, setResults] = useState([]);
+
   return (
     <>
       <Header />
-      <SearchBar />
+      <SearchBar onResults={setResults} />
+      <Wrapper results={results} />
     </>
   );
 }
