@@ -1,6 +1,7 @@
 /* Base styles for the search bar */
 .search-bar {
-    margin: 100px auto;
+    margin: auto;
+    margin-top: 100px;
     display: flex;
     align-items: center;
     background-color: #fff;
