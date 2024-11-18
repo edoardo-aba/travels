@@ -231,9 +231,10 @@ app.get('/api/search', async (req, res) => {
 
     try {
         // Send the query to Solr using Axios GET request
+        const query = `title:${title} OR description:${title}`;
         const response = await axios.get(`http://localhost:8983/solr/websites/select`, {
             params: {
-                q: `title:${title}`,
+                q: query,
                 fl: 'id,title,description,image,source',
                 start: 0,
                 rows: 10,
