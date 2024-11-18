@@ -1,9 +1,11 @@
-import { useState } from 'react'; // Import useState
+// Card.js
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import DOMPurify from 'dompurify';
+import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa'; // Import icons
 import './Card.css';
 
-const Card = ({ id, title, description, image, query }) => { // Added id prop
+const Card = ({ id, title, description, image, query, reFetchResults }) => {
   const descriptionText = description || '';
   const truncatedDescription = `${descriptionText.slice(0, 120)}...`;
 
@@ -56,7 +58,10 @@ const Card = ({ id, title, description, image, query }) => { // Added id prop
         const matchIndex = match.index;
 
         const snippetStart = Math.max(0, matchIndex - Math.floor(snippetLength / 2));
-        const snippetEnd = Math.min(descriptionText.length, matchIndex + Math.ceil(snippetLength / 2));
+        const snippetEnd = Math.min(
+          descriptionText.length,
+          matchIndex + Math.ceil(snippetLength / 2)
+        );
 
         let snippet = descriptionText.slice(snippetStart, snippetEnd);
 
@@ -92,19 +97,21 @@ const Card = ({ id, title, description, image, query }) => { // Added id prop
   // Prepare the snippet
   const snippet = getSnippetWithQueryTerms(title, descriptionText, query, 150);
 
-  // Add state to track feedback status
-  const [feedbackGiven, setFeedbackGiven] = useState(false);
+  // State to track which feedback was given
+  const [feedbackType, setFeedbackType] = useState(null);
 
   // Function to handle thumbs up
   const handleThumbsUp = async () => {
     await sendFeedback(id, 'positive');
-    setFeedbackGiven(true);
+    setFeedbackType('positive');
+    reFetchResults(); // Re-fetch results after feedback
   };
 
   // Function to handle thumbs down
   const handleThumbsDown = async () => {
     await sendFeedback(id, 'negative');
-    setFeedbackGiven(true);
+    setFeedbackType('negative');
+    reFetchResults(); // Re-fetch results after feedback
   };
 
   const sendFeedback = async (documentId, feedbackType) => {
@@ -120,7 +127,7 @@ const Card = ({ id, title, description, image, query }) => { // Added id prop
       }
     } catch (error) {
       console.error('Error sending feedback:', error);
-      // Optionally handle error, e.g., display a message to the user
+      // Optionally handle error
     }
   };
 
@@ -128,6 +135,23 @@ const Card = ({ id, title, description, image, query }) => { // Added id prop
     <div className="card">
       <div className="card-image">
         <img src={image} alt={title} />
+        {/* Feedback buttons */}
+        <div className="feedback-buttons">
+          <button
+            className={`thumb-button up ${feedbackType === 'positive' ? 'clicked' : ''}`}
+            onClick={handleThumbsUp}
+            disabled={feedbackType !== null}
+          >
+            <FaThumbsUp />
+          </button>
+          <button
+            className={`thumb-button down ${feedbackType === 'negative' ? 'clicked' : ''}`}
+            onClick={handleThumbsDown}
+            disabled={feedbackType !== null}
+          >
+            <FaThumbsDown />
+          </button>
+        </div>
       </div>
       <div className="card-content">
         <h3 className="card-title">{title}</h3>
@@ -139,26 +163,18 @@ const Card = ({ id, title, description, image, query }) => { // Added id prop
             dangerouslySetInnerHTML={{ __html: snippet }}
           ></p>
         </div>
-        {/* Feedback buttons */}
-        <div className="feedback-buttons">
-          <button onClick={handleThumbsUp} disabled={feedbackGiven}>
-            👍
-          </button>
-          <button onClick={handleThumbsDown} disabled={feedbackGiven}>
-            👎
-          </button>
-        </div>
       </div>
     </div>
   );
 };
 
 Card.propTypes = {
-  id: PropTypes.string.isRequired, // Added id to propTypes
+  id: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   image: PropTypes.string.isRequired,
   query: PropTypes.string.isRequired,
+  reFetchResults: PropTypes.func.isRequired,
 };
 
 export default Card;

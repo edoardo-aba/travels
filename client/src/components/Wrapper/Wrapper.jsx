@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Card from '../Card/Card';
 import './Wrapper.css';
 
-const Wrapper = ({ results, query, loading }) => {
+const Wrapper = ({ results, query, loading, reFetchResults }) => {
   if (!query) {
     return null;
   }
@@ -24,6 +24,7 @@ const Wrapper = ({ results, query, loading }) => {
                 description={result.description}
                 image={result.image}
                 query={query}
+                reFetchResults={reFetchResults}
               />
             ))
           ) : (
@@ -42,11 +43,11 @@ Wrapper.propTypes = {
       title: PropTypes.string.isRequired,
       description: PropTypes.string,
       image: PropTypes.string,
-      relevance: PropTypes.number, // Include if needed
     })
   ).isRequired,
   query: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
+  reFetchResults: PropTypes.func.isRequired,
 };
 
 export default Wrapper;
