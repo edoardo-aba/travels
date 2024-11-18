@@ -1,0 +1,60 @@
+/* Base styles for the search bar */
+.search-bar {
+    margin: 100px auto;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 50px;
+    padding: 15px 20px;
+    width: 900px;
+    /* Default size */
+    height: 60px;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Hover effect: grows in height and width */
+.search-bar-hovered {
+    width: 1000px;
+    height: 80px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Travel-related icon styles (colored icon) */
+.travel-icon {
+    margin-right: 15px;
+    font-size: 24px;
+    color: #007bff;
+    /* Blue color for travel icon */
+}
+
+/* Input field styles */
+.search-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    color: #333;
+}
+
+.search-input::placeholder {
+    color: #aaa;
+}
+
+/* Search icon on the right (black color) */
+.search-icon {
+    margin-left: 15px;
+    font-size: 24px;
+    color: #000;
+   
+}
+
+/* Focus and hover cursor styles */
+.search-bar:hover {
+    cursor: pointer;
+}
+
+.search-bar:focus-within .search-input {
+    color: #000;
+}

@@ -221,7 +221,6 @@ async function syncMongoWithSolr() {
 }
 
 // Search API
-// Search API
 app.get('/api/search', async (req, res) => {
     const text = req.query.text;
     console.log('Search Title:', text);
