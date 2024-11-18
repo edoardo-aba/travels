@@ -1,0 +1,5 @@
+- do the login and chache par on the right
+- at the beginning do not display anything, then if the user does a query and the result is negative display on no no results
+- create card long to visualize the results,
+- add the key words to the card
+- add loader when fetching to make it look real
