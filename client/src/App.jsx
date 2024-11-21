@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header/Header';
 import SearchBar from './components/SearchBar/SearchBar';
 import Wrapper from './components/Wrapper/Wrapper';
@@ -12,6 +12,17 @@ function App() {
   const [searchedQuery, setSearchedQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false); // Track if a search has been made
+
+  useEffect(() => {
+    // Update the body's class based on the searchPerformed state
+    if (searchPerformed) {
+      document.body.classList.remove('image-background');
+      document.body.classList.add('white-background');
+    } else {
+      document.body.classList.remove('white-background');
+      document.body.classList.add('image-background');
+    }
+  }, [searchPerformed]);
 
   const performSearch = async (query) => {
     setLoading(true);

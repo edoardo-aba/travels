@@ -11,9 +11,13 @@
     /* Default size */
     height: 60px;
     transition: all 0.3s ease;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow:   1px 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
     font-family: "Geist", sans-serif;
+    /* border: 1px solid grey; */
+    background: #fff;
+    box-shadow: 0 2px 8px 1px rgba(64,60,67,.24);
+    border-color: transparent;
 }
 
 /* Hover effect: grows in height and width */

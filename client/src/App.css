@@ -1,13 +1,24 @@
-html{
-  height: 100vh;
+html {
+  height: 100%;
 }
+
 body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  transition: background 0.5s ease-in-out; /* Smooth transition for background changes */
+}
+
+/* Background when no search has been performed */
+body.image-background {
   background-image: url('https://img.freepik.com/free-vector/pastel-pink-purple-gradient-blur-background_53876-115211.jpg');
   background-size: cover; /* Ensures the image covers the entire background */
   background-position: center; /* Centers the image */
   background-repeat: no-repeat; /* Prevents tiling of the image */
-  margin: 0; /* Removes default body margin */
-  font-family: Arial, sans-serif; /* Optional: Set a default font */
+}
+
+/* Background after search */
+body.white-background {
+  background-color: white; /* Changes background to white */
 }
 
 .main-container {
@@ -43,7 +54,6 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 
 .wrapper, .image-wrapper {
   flex: 1;
