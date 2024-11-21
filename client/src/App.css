@@ -1,3 +1,15 @@
+html{
+  height: 100vh;
+}
+body {
+  background-image: url('https://img.freepik.com/free-vector/pastel-pink-purple-gradient-blur-background_53876-115211.jpg');
+  background-size: cover; /* Ensures the image covers the entire background */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents tiling of the image */
+  margin: 0; /* Removes default body margin */
+  font-family: Arial, sans-serif; /* Optional: Set a default font */
+}
+
 .main-container {
   display: flex;
   flex-direction: row;

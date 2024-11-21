@@ -11,9 +11,11 @@ function App() {
   const [results, setResults] = useState([]);
   const [searchedQuery, setSearchedQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false); // Track if a search has been made
 
   const performSearch = async (query) => {
     setLoading(true);
+    setSearchPerformed(true); // Mark that a search is now being performed
     try {
       const results = await fetchSearchResults(query);
       setResults(results);
@@ -28,11 +30,13 @@ function App() {
   const handleSearchResults = (results, query) => {
     setSearchedQuery(query);
     setResults(results);
+    setSearchPerformed(true); // Mark that a search was completed
     setLoading(false);
   };
 
   const handleSearchStart = () => {
     setLoading(true);
+    setSearchPerformed(true); // Mark that a search has started
   };
 
   const reFetchResults = () => {
@@ -45,19 +49,21 @@ function App() {
     <>
       <Header />
       <SearchBar onSearch={handleSearchResults} onSearchStart={handleSearchStart} />
-      {results.length > 0 ? (
-        <div className="main-container">
-          <Wrapper
-            results={results}
-            query={searchedQuery}
-            loading={loading}
-            reFetchResults={reFetchResults}
-          />
-          <ImageWrapper results={results} />
-        </div>
-      ) : (
-        <NoResult />
-      )}
+      {searchPerformed ? (
+        results.length > 0 ? (
+          <div className="main-container">
+            <Wrapper
+              results={results}
+              query={searchedQuery}
+              loading={loading}
+              reFetchResults={reFetchResults}
+            />
+            <ImageWrapper results={results} />
+          </div>
+        ) : (
+          <NoResult />
+        )
+      ) : null}
     </>
   );
 }
