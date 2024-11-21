@@ -1,16 +1,54 @@
-:root {
-  font-family: "Geist", sans-serif;
-  line-height: 1.5;
-
+.main-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin-top: 20px;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
+.wrapper {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  border-right: 1px solid #ccc;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  
+.image-wrapper {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.image-item {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+.wrapper, .image-wrapper {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  border-right: 1px solid #ccc;
+}
+
+/* Hide the scrollbar for WebKit browsers */
+.wrapper::-webkit-scrollbar,
+.image-wrapper::-webkit-scrollbar {
+  width: 0; /* Hide scrollbar by setting its width to 0 */
+  height: 0; /* For horizontal scrollbars (if any) */
+}
+
+.wrapper,
+.image-wrapper {
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  scrollbar-width: none; /* For Firefox */
 }

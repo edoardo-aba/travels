@@ -1,0 +1,14 @@
+.placeholder {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    margin-top: 20px;
+  }
+  
+  .placeholder-image {
+    width: 150px;
+    height: auto;
+    margin-top: 10px;
+    opacity: 0.5;
+  }
+  

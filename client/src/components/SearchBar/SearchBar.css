@@ -55,6 +55,7 @@
 /* Focus and hover cursor styles */
 .search-bar:hover {
     cursor: pointer;
+    
 }
 
 .search-bar:focus-within .search-input {

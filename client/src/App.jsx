@@ -1,16 +1,16 @@
-// App.js
 import { useState } from 'react';
 import Header from './components/Header/Header';
 import SearchBar from './components/SearchBar/SearchBar';
 import Wrapper from './components/Wrapper/Wrapper';
+import ImageWrapper from './components/ImageWrapper/ImageWrapper';
 import { fetchSearchResults } from './api';
+import './App.css'; // Add necessary styles here.
 
 function App() {
   const [results, setResults] = useState([]);
   const [searchedQuery, setSearchedQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Function to perform the search
   const performSearch = async (query) => {
     setLoading(true);
     try {
@@ -24,7 +24,6 @@ function App() {
     }
   };
 
-  // Function to handle search results
   const handleSearchResults = (results, query) => {
     setSearchedQuery(query);
     setResults(results);
@@ -35,7 +34,6 @@ function App() {
     setLoading(true);
   };
 
-  // Function to re-fetch results
   const reFetchResults = () => {
     if (searchedQuery) {
       performSearch(searchedQuery);
@@ -46,12 +44,15 @@ function App() {
     <>
       <Header />
       <SearchBar onSearch={handleSearchResults} onSearchStart={handleSearchStart} />
-      <Wrapper
-        results={results}
-        query={searchedQuery}
-        loading={loading}
-        reFetchResults={reFetchResults}
-      />
+      <div className="main-container">
+        <Wrapper
+          results={results}
+          query={searchedQuery}
+          loading={loading}
+          reFetchResults={reFetchResults}
+        />
+        <ImageWrapper results={results} />
+      </div>
     </>
   );
 }
