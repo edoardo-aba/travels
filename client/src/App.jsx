@@ -3,6 +3,7 @@ import Header from './components/Header/Header';
 import SearchBar from './components/SearchBar/SearchBar';
 import Wrapper from './components/Wrapper/Wrapper';
 import ImageWrapper from './components/ImageWrapper/ImageWrapper';
+import NoResult from './components/NoResult/NoResult'; // Import the NoResult component
 import { fetchSearchResults } from './api';
 import './App.css'; // Add necessary styles here.
 
@@ -44,15 +45,19 @@ function App() {
     <>
       <Header />
       <SearchBar onSearch={handleSearchResults} onSearchStart={handleSearchStart} />
-      <div className="main-container">
-        <Wrapper
-          results={results}
-          query={searchedQuery}
-          loading={loading}
-          reFetchResults={reFetchResults}
-        />
-        <ImageWrapper results={results} />
-      </div>
+      {results.length > 0 ? (
+        <div className="main-container">
+          <Wrapper
+            results={results}
+            query={searchedQuery}
+            loading={loading}
+            reFetchResults={reFetchResults}
+          />
+          <ImageWrapper results={results} />
+        </div>
+      ) : (
+        <NoResult />
+      )}
     </>
   );
 }
