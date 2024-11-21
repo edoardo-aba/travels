@@ -1,7 +1,7 @@
 - do the login and chache par on the right
-DONE - at the beginning do not display anything, then if the user does a query and the result is negative display on no no results
+- at the beginning do not display anything, then if the user does a query and the result is negative display on no no results
 DONE - create card long to visualize the results,
 DONE - add the key words to the card (explain matchin in title and description)
 DONE - add loader when fetching to make it look real
 - grid for images
-- fix the search bar when hoverd needs to become bigger
+DONE- fix the search bar when hoverd needs to become bigger

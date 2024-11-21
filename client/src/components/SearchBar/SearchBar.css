@@ -54,8 +54,9 @@
 
 /* Focus and hover cursor styles */
 .search-bar:hover {
-    cursor: pointer;
-    
+    width: 1000px; /* Expanded width on hover */
+    height: 80px; /* Expanded height on hover */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
 }
 
 .search-bar:focus-within .search-input {
