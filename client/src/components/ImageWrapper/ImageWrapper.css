@@ -1,14 +1,41 @@
-.placeholder {
-    text-align: center;
-    color: #888;
-    font-style: italic;
-    margin-top: 20px;
+.image-wrapper{
+    font-family: "Geist", sans-serif;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px) !important; /* 3 images per row, each 100px wide */
+  column-gap: 150px !important;
+    margin: 0 auto; /* Center grid in parent container */
   }
   
-  .placeholder-image {
-    width: 150px;
-    height: auto;
-    margin-top: 10px;
-    opacity: 0.5;
+  .image-wrapper h2 {
+    margin-bottom: 10px;
   }
+  
+  
+  .image-item:hover {
+    transform: scale(1.1); /* Enlarge slightly on hover */
+  }
+  
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    cursor: pointer;
+  }
+  
+  .full-image {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+  }
+  
   

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import './ImageWrapper.css';
+import Image from '../Image/Image';
 
 const ImageWrapper = ({ results }) => {
-  // Only show the heading and content if a search has been done
   const hasSearched = results && results.length > 0;
 
   return (
@@ -13,11 +13,10 @@ const ImageWrapper = ({ results }) => {
           <div className="image-grid">
             {results.map((result) =>
               result.image ? (
-                <img
+                <Image
                   key={result.id}
                   src={result.image}
                   alt={result.title || 'Search Result Image'}
-                  className="image-item"
                 />
               ) : null
             )}
