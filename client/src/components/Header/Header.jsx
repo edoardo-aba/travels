@@ -2,10 +2,7 @@
 import './Header.css';
 
 const Header = () => {
-  const handleClick = () => {
-    alert('Hello');
-  };
-
+ 
   return (
     <header className="header">
       <div className="header-left">
@@ -17,11 +14,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <div className="header-right">
-        <button className="icon-button" onClick={handleClick}>
-          <i className="fas fa-user icon"></i>
-        </button>
-      </div>
+      
     </header>
   );
 };
