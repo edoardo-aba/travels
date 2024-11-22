@@ -1,66 +1,65 @@
 .header {
-    position: fixed;
-    top: 0;
-    width: 97%;
-    background-color: transparent;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    z-index: 1000;
-    font-family: "Geist", sans-serif;
-  }
-  
-  .header-left, .header-right {
-    display: flex;
-    align-items: center;
-  }
-  
-  .location {
-    display: flex;
-    align-items: center;
-  }
-  
-  .sun-icon {
-    font-size: 24px;
-    color: yellow;
-    margin-right: 10px;
-  }
-  
-  .location-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .city {
-    font-size: 16px;
-    font-weight: bold;
-    color: #555;
-  }
-  
-  .temperature {
-    font-size: 14px;
-    color: #555;
-  }
-  
-  .icon-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .icon-button:focus {
-    outline: none;
-  }
-  
-  .icon {
-    font-size: 20px;
-    color: #333;
-    transition: color 0.3s;
-  }
-  
-  .icon-button:hover .icon {
-    color: #555;
-  }
-  
+  position: fixed;
+  top: 0;
+  width: 97%;
+  background-color: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px; /* Increased padding for more space */
+  z-index: 1000;
+  font-family: "Geist", sans-serif;
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+}
+
+.sun-icon {
+  font-size: 32px; /* Increased font size for the icon */
+  color: yellow;
+  margin-right: 12px; /* Slightly increased spacing */
+}
+
+.location-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.city {
+  font-size: 20px; /* Increased font size for city name */
+  font-weight: bold;
+  color: #555;
+}
+
+.temperature {
+  font-size: 18px; /* Increased font size for temperature */
+  color: #555;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.icon-button:focus {
+  outline: none;
+}
+
+.icon {
+  font-size: 24px; /* Increased size for icons */
+  color: #333;
+  transition: color 0.3s;
+}
+
+.icon-button:hover .icon {
+  color: #555;
+}
