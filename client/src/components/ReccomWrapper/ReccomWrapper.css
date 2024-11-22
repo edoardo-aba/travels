@@ -3,12 +3,11 @@
     gap: 1rem;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
     flex-wrap: wrap;
-    margin-top: 50px;
-  }
-  
-  .reccom-card {
+    margin-top: 60px;
+}
+
+.reccom-card {
     width: 250px;
     border-radius: 10px;
     background-color: #ffffff;
@@ -16,23 +15,33 @@
     text-align: center;
     padding: 1rem;
     transition: transform 0.2s;
-  }
-  
-  .reccom-card:hover {
+}
+
+.reccom-card:hover {
     transform: translateY(-5px);
-  }
-  
-  .reccom-card-image {
+}
+
+.reccom-card-image {
     width: 100%;
     height: auto;
     border-radius: 10px;
     margin-bottom: 0.5rem;
-  }
-  
-  .reccom-card-title {
+}
+
+.reccom-card-title {
     font-size: 14px;
     font-weight: bold;
     color: #333333;
     margin: 0;
-  }
-  
+}
+
+
+.reccom-header {
+    display: flex;
+    align-items: center;
+    padding-left: 16%;
+    margin-top: 70px;
+    color: #333333;
+    font-size: 20px;
+    font-weight: bold;
+}

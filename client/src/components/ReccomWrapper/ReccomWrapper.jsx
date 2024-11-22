@@ -80,7 +80,11 @@ const ReccomWrapper = ({ onSearch, onSearchStart, setQuery }) => {
   };
 
   if (loading) {
-    return <div>Loading recommendations...</div>;
+    return (
+      <div className="loading-container">
+        <div className="loader"></div> {/* Add a spinner */}
+      </div>
+    );
   }
 
   if (!recommendations || recommendations.length === 0) {
@@ -88,21 +92,24 @@ const ReccomWrapper = ({ onSearch, onSearchStart, setQuery }) => {
   }
 
   return (
-    <div className="reccom-wrapper">
-      {recommendations.map((item) => {
-        const importantWords = getImportantWords(item.title, item.description);
-        return (
-          <div key={item.id} className="reccom-card">
-            <img
-              src={item.image || 'default-image.png'} // Fallback image
-              alt={item.title}
-              className="reccom-card-image"
-              onClick={() => handleImageClick(importantWords)} // Pass the word to handleImageClick
-            />
-            <p className="reccom-card-title">{importantWords}</p>
-          </div>
-        );
-      })}
+    <div className="reccom-wrapper-container">
+      <h2 className="reccom-header">Recommended Topics:</h2>
+      <div className="reccom-wrapper">
+        {recommendations.map((item) => {
+          const importantWords = getImportantWords(item.title, item.description);
+          return (
+            <div key={item.id} className="reccom-card">
+              <img
+                src={item.image || 'default-image.png'} // Fallback image
+                alt={item.title}
+                className="reccom-card-image"
+                onClick={() => handleImageClick(importantWords)} // Pass the word to handleImageClick
+              />
+              <p className="reccom-card-title">{importantWords}</p>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
