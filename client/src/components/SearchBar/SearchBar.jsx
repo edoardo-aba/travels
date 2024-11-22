@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import './SearchBar.css';
 import { fetchSearchResults } from '../../api';
 
-const SearchBar = ({ onSearch, onSearchStart }) => {
-  const [query, setQuery] = useState('');
-
+const SearchBar = ({ onSearch, onSearchStart, query, setQuery }) => {
   const handleSearch = async () => {
     if (!query.trim()) return;
     onSearchStart();
@@ -33,8 +30,8 @@ const SearchBar = ({ onSearch, onSearchStart }) => {
         type="text"
         placeholder="Search for destinations"
         className="search-input"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        value={query} // Controlled input
+        onChange={(e) => setQuery(e.target.value)} // Updates only the input field
         onKeyDown={handleKeyDown}
       />
       <div className="search-icon" onClick={handleSearch}>
@@ -47,6 +44,8 @@ const SearchBar = ({ onSearch, onSearchStart }) => {
 SearchBar.propTypes = {
   onSearch: PropTypes.func.isRequired,
   onSearchStart: PropTypes.func.isRequired,
+  query: PropTypes.string.isRequired,
+  setQuery: PropTypes.func.isRequired,
 };
 
 export default SearchBar;

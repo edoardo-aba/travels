@@ -5,6 +5,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const SolrNode = require('solr-node'); // Solr client
 const cron = require('node-cron');
 const axios = require('axios');
+const { TokenizerEn, StopwordsEn } = require('@nlpjs/lang-en-min'); // for nlp tools (relevance when fetching )
 
 const solrUrl = 'http://localhost:8983/solr/websites/update';
 
@@ -226,6 +227,7 @@ async function syncMongoWithSolr() {
 app.get('/api/search', async (req, res) => {
     const text = req.query.text;
     console.log('Search Title:', text);
+
     if (!text) {
         return res.status(400).json({ error: 'Query parameter "text" is required' });
     }
@@ -238,8 +240,7 @@ app.get('/api/search', async (req, res) => {
                 q: query,
                 fl: 'id,title,description,image,source,relevance', // Include relevance
                 start: 0,
-                rows: 10,
-                sort: 'relevance desc', // Sort by relevance
+                rows: 50, // Fetch up to 50 documents
                 wt: 'json',
             },
         });
@@ -249,13 +250,46 @@ app.get('/api/search', async (req, res) => {
         // Process the Solr response
         const docs = response.data.response.docs;
 
-        const hits = docs.map(doc => ({
+        // Use a tokenizer and stopword remover for additional ranking
+        const tokenizer = new TokenizerEn();
+        const stopwords = new StopwordsEn();
+
+        // Tokenize the search query and remove stopwords
+        const queryTokens = tokenizer
+            .tokenize(text.toLowerCase())
+            .filter((word) => !stopwords.isStopword(word));
+
+        // Enhance document ranking by computing relevance to the query tokens
+        const rankedDocs = docs
+            .map((doc) => {
+                // Combine the title and description
+                const combinedText = `${doc.title || ''} ${doc.description || ''}`.toLowerCase();
+
+                // Tokenize the document's text and remove stopwords
+                const docTokens = tokenizer
+                    .tokenize(combinedText)
+                    .filter((word) => !stopwords.isStopword(word));
+
+                // Calculate a match score based on query tokens
+                const matchScore = queryTokens.reduce((score, token) => {
+                    return score + (docTokens.includes(token) ? 1 : 0);
+                }, 0);
+
+                // Combine relevance field and match score to determine the final score
+                const finalScore = doc.relevance + matchScore;
+
+                return { ...doc, finalScore };
+            })
+            .sort((a, b) => b.finalScore - a.finalScore); // Sort by finalScore in descending order
+            console.log('Ranked Docs:', rankedDocs);
+        // Return the sorted results
+        const hits = rankedDocs.map((doc) => ({
             id: doc.id,
             title: Array.isArray(doc.title) ? doc.title[0] : doc.title,
             description: Array.isArray(doc.description) ? doc.description[0] : doc.description,
             image: doc.image,
             source: doc.source,
-            relevance: doc.relevance, // Include relevance if needed
+            relevance: doc.relevance,
         }));
 
         res.json({ results: hits });

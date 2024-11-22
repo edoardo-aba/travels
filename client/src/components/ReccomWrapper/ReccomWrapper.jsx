@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { fetchRecommendations, fetchSearchResults } from '../../api'; // Import the necessary API functions
+import PropTypes from 'prop-types';
+import { fetchRecommendations, fetchSearchResults } from '../../api'; // Import the API function
+import { TokenizerEn, StopwordsEn } from '@nlpjs/lang-en-min'; // Import NLP tools
 import './ReccomWrapper.css'; // Add necessary styles
 
-const ReccomWrapper = () => {
+const ReccomWrapper = ({ onSearch, onSearchStart, setQuery }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,40 +28,54 @@ const ReccomWrapper = () => {
     fetchData();
   }, []);
 
-  // Function to calculate the most important word from the first half of the title
-  const getImportantWord = (title) => {
-    if (!title) return 'Untitled';
-    
-    const stopWords = [
-      'the', 'of', 'and', 'a', 'to', 'in', 'is', 'it', 'for', 'on', 'with', 'as', 'at', 'an', 'by'
-    ];
-    
-    // Split the title into words and focus on the first half
-    const words = title.split(/\s+/); // Split the title into an array of words
-    const firstHalf = words.slice(0, Math.ceil(words.length / 2)); // Take the first half of the title
-  
-    // Filter the first half to remove stop words and short words
-    const filteredWords = firstHalf.filter(
-      (word) => word.length > 2 && !stopWords.includes(word.toLowerCase())
+  // Function to extract and calculate important words from title and description
+  const getImportantWords = (title, description) => {
+    if (!title && !description) return 'No Keywords';
+
+    // Combine title and description
+    const combinedText = `${title || ''} ${description || ''}`.toLowerCase();
+
+    // Initialize tokenizer and stopword remover
+    const tokenizer = new TokenizerEn(); // English tokenizer
+    const stopwords = new StopwordsEn(); // English stopword list
+
+    // Tokenize the combined text into words
+    const tokens = tokenizer.tokenize(combinedText);
+
+    // Remove stopwords and short words
+    const filteredWords = tokens.filter(
+      (word) =>
+        word.length > 2 && // Keep words with length > 2
+        !stopwords.isStopword(word) // Remove stopwords
     );
-  
-    if (filteredWords.length === 0) return 'No Keywords';
-  
-    // Sanitize words by removing punctuation
-    const sanitizedWords = filteredWords.map((word) => word.replace(/[^\w\s]/g, ''));
-  
-    // Return the longest sanitized word or any custom logic
-    return sanitizedWords.reduce((a, b) => (a.length > b.length ? a : b));
+
+    // Count word frequencies
+    const wordFrequency = filteredWords.reduce((acc, word) => {
+      acc[word] = (acc[word] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Sort words by frequency and pick the top 1-3
+    const sortedWords = Object.entries(wordFrequency)
+      .sort(([, freqA], [, freqB]) => freqB - freqA) // Sort by frequency
+      .slice(0, 3) // Limit to top 3 words
+      .map(([word]) => word);
+
+    return sortedWords.join(' '); // Combine top words
   };
 
   // Function to handle image click
   const handleImageClick = async (word) => {
+    if (!word) return;
+
+    setQuery(word); // Update the SearchBar's input with the word
+    onSearchStart(); // Trigger loading state
     try {
-      const searchResults = await fetchSearchResults(word); // Make the API call with the word
-      console.log('Search Results:', searchResults);
-      // Optionally, you can set these results into state or navigate to a search results page
+      const results = await fetchSearchResults(word); // Fetch results for the word
+      onSearch(results, word); // Pass results and word back to App
     } catch (error) {
       console.error('Error fetching search results:', error);
+      onSearch([], word); // Handle failure by passing empty results
     }
   };
 
@@ -74,21 +90,27 @@ const ReccomWrapper = () => {
   return (
     <div className="reccom-wrapper">
       {recommendations.map((item) => {
-        const importantWord = getImportantWord(item.title);
+        const importantWords = getImportantWords(item.title, item.description);
         return (
           <div key={item.id} className="reccom-card">
             <img
               src={item.image || 'default-image.png'} // Fallback image
               alt={item.title}
               className="reccom-card-image"
-              onClick={() => handleImageClick(importantWord)} // Attach click event
+              onClick={() => handleImageClick(importantWords)} // Pass the word to handleImageClick
             />
-            <p className="reccom-card-title">{importantWord}</p>
+            <p className="reccom-card-title">{importantWords}</p>
           </div>
         );
       })}
     </div>
   );
+};
+
+ReccomWrapper.propTypes = {
+  onSearch: PropTypes.func.isRequired,
+  onSearchStart: PropTypes.func.isRequired,
+  setQuery: PropTypes.func.isRequired,
 };
 
 export default ReccomWrapper;

@@ -3,19 +3,19 @@ import Header from './components/Header/Header';
 import SearchBar from './components/SearchBar/SearchBar';
 import Wrapper from './components/Wrapper/Wrapper';
 import ImageWrapper from './components/ImageWrapper/ImageWrapper';
-import NoResult from './components/NoResult/NoResult'; // Import the NoResult component
-import ReccomWrapper from './components/ReccomWrapper/ReccomWrapper'; // Import the ReccomWrapper component
+import NoResult from './components/NoResult/NoResult';
+import ReccomWrapper from './components/ReccomWrapper/ReccomWrapper';
 import { fetchSearchResults } from './api';
-import './App.css'; // Add necessary styles here.
+import './App.css';
 
 function App() {
   const [results, setResults] = useState([]);
-  const [searchedQuery, setSearchedQuery] = useState('');
+  const [searchedQuery, setSearchedQuery] = useState(''); // Tracks input value in SearchBar
+  const [activeSearchQuery, setActiveSearchQuery] = useState(''); // Tracks active query for display
   const [loading, setLoading] = useState(false);
-  const [searchPerformed, setSearchPerformed] = useState(false); // Track if a search has been made
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
   useEffect(() => {
-    // Update the body's class based on the searchPerformed state
     if (searchPerformed) {
       document.body.classList.remove('image-background');
       document.body.classList.add('white-background');
@@ -27,10 +27,11 @@ function App() {
 
   const performSearch = async (query) => {
     setLoading(true);
-    setSearchPerformed(true); // Mark that a search is now being performed
+    setSearchPerformed(true);
     try {
       const results = await fetchSearchResults(query);
       setResults(results);
+      setActiveSearchQuery(query); // Update the active query only when search is performed
     } catch (error) {
       console.error('Failed to fetch results.', error);
       setResults([]);
@@ -42,45 +43,56 @@ function App() {
   const handleSearchResults = (results, query) => {
     setSearchedQuery(query);
     setResults(results);
-    setSearchPerformed(true); // Mark that a search was completed
+    setActiveSearchQuery(query); // Update the active query only when search is completed
+    setSearchPerformed(true);
     setLoading(false);
   };
 
   const handleSearchStart = () => {
     setLoading(true);
-    setSearchPerformed(true); // Mark that a search has started
+    setSearchPerformed(true);
   };
 
   const reFetchResults = () => {
-    if (searchedQuery) {
-      performSearch(searchedQuery);
+    if (activeSearchQuery) {
+      performSearch(activeSearchQuery);
     }
   };
 
   return (
-  <>
-    <Header />
-    <SearchBar onSearch={handleSearchResults} onSearchStart={handleSearchStart} />
-    {searchPerformed ? (
-      results.length > 0 ? (
-        <div className="main-container">
-          <Wrapper
-            results={results}
-            query={searchedQuery}
-            loading={loading}
-            reFetchResults={reFetchResults}
-          />
-          <ImageWrapper results={results} />
-        </div>
+    <>
+      <Header />
+      <SearchBar
+        onSearch={handleSearchResults}
+        onSearchStart={handleSearchStart}
+        query={searchedQuery}
+        setQuery={setSearchedQuery} // Updates the input field but not the displayed results
+      />
+      {searchPerformed ? (
+        loading ? (
+          <div>Loading...</div> // Prevent rendering of NoResult or Wrapper during loading
+        ) : results.length > 0 ? (
+          <div className="main-container">
+            <Wrapper
+              results={results}
+              query={activeSearchQuery} // Use activeSearchQuery to avoid display changes
+              loading={loading}
+              reFetchResults={reFetchResults}
+            />
+            <ImageWrapper results={results} />
+          </div>
+        ) : (
+          <NoResult />
+        )
       ) : (
-        <NoResult />
-      )
-    ) : (
-      <ReccomWrapper /> // Display ReccomWrapper when no search has been performed
-    )}
-  </>
-);
-
+        <ReccomWrapper
+          onSearch={handleSearchResults}
+          onSearchStart={handleSearchStart}
+          setQuery={setSearchedQuery} // Updates search input but not the display
+        />
+      )}
+    </>
+  );
 }
 
 export default App;
