@@ -59,6 +59,9 @@ function App() {
     }
   };
 
+  // Determine if we should render the results
+  const shouldRenderResults = searchPerformed && !loading;
+
   return (
     <>
       <Header />
@@ -68,10 +71,8 @@ function App() {
         query={searchedQuery}
         setQuery={setSearchedQuery} // Updates the input field but not the displayed results
       />
-      {searchPerformed ? (
-        loading ? (
-          <div>Loading...</div> // Prevent rendering of NoResult or Wrapper during loading
-        ) : results.length > 0 ? (
+      {shouldRenderResults ? (
+        results.length > 0 ? (
           <div className="main-container">
             <Wrapper
               results={results}
@@ -84,6 +85,10 @@ function App() {
         ) : (
           <NoResult />
         )
+      ) : loading ? (
+        <div className="loading-container">
+          <div className="loader"></div> {/* Add a custom loader */}
+        </div>
       ) : (
         <ReccomWrapper
           onSearch={handleSearchResults}

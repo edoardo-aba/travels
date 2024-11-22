@@ -288,7 +288,7 @@ app.get('/api/search', async (req, res) => {
             title: Array.isArray(doc.title) ? doc.title[0] : doc.title,
             description: Array.isArray(doc.description) ? doc.description[0] : doc.description,
             image: doc.image,
-            source: doc.source,
+            source: doc.source,  
             relevance: doc.relevance,
         }));
 
