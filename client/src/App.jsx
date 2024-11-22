@@ -4,6 +4,7 @@ import SearchBar from './components/SearchBar/SearchBar';
 import Wrapper from './components/Wrapper/Wrapper';
 import ImageWrapper from './components/ImageWrapper/ImageWrapper';
 import NoResult from './components/NoResult/NoResult'; // Import the NoResult component
+import ReccomWrapper from './components/ReccomWrapper/ReccomWrapper'; // Import the ReccomWrapper component
 import { fetchSearchResults } from './api';
 import './App.css'; // Add necessary styles here.
 
@@ -57,26 +58,29 @@ function App() {
   };
 
   return (
-    <>
-      <Header />
-      <SearchBar onSearch={handleSearchResults} onSearchStart={handleSearchStart} />
-      {searchPerformed ? (
-        results.length > 0 ? (
-          <div className="main-container">
-            <Wrapper
-              results={results}
-              query={searchedQuery}
-              loading={loading}
-              reFetchResults={reFetchResults}
-            />
-            <ImageWrapper results={results} />
-          </div>
-        ) : (
-          <NoResult />
-        )
-      ) : null}
-    </>
-  );
+  <>
+    <Header />
+    <SearchBar onSearch={handleSearchResults} onSearchStart={handleSearchStart} />
+    {searchPerformed ? (
+      results.length > 0 ? (
+        <div className="main-container">
+          <Wrapper
+            results={results}
+            query={searchedQuery}
+            loading={loading}
+            reFetchResults={reFetchResults}
+          />
+          <ImageWrapper results={results} />
+        </div>
+      ) : (
+        <NoResult />
+      )
+    ) : (
+      <ReccomWrapper /> // Display ReccomWrapper when no search has been performed
+    )}
+  </>
+);
+
 }
 
 export default App;

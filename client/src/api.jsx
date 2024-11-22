@@ -23,3 +23,17 @@ export const fetchSearchResults = async (text) => {
     throw error;
   }
 };
+
+
+
+// Fetch recommendations
+export const fetchRecommendations = async () => {
+  try {
+    const response = await axios.get('/api/fetchRecommendations');
+    return response.data.recommendations; // Return the list of recommendations
+  } catch (error) {
+    console.error('Error fetching recommendations:', error);
+    throw error;
+  }
+};
+

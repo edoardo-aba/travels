@@ -330,6 +330,48 @@ app.post('/api/feedback', async (req, res) => {
     }
 });
 
+// Fetch all recommendations API
+app.get('/api/fetchRecommendations', async (req, res) => {
+    try {
+        console.log('Fetching all recommendations from Solr...');
+        
+        // Query Solr for all documents
+        const response = await axios.get('http://localhost:8983/solr/websites/select', {
+            params: {
+                q: 'title:*', // Match all documents
+                fl: 'id,title,description,image,source,relevance', // Specify fields to fetch
+                start: 0,
+                rows: 50, // Adjust rows to fetch the desired number of recommendations
+                sort: 'relevance desc', // Sort by relevance
+                wt: 'json', // Response format
+            },
+        });
+
+        console.log('Solr Response:', response.data);
+
+        // Process Solr response
+        const docs = response.data.response.docs;
+        const recommendations = docs.map(doc => ({
+            id: doc.id,
+            title: Array.isArray(doc.title) ? doc.title[0] : doc.title,
+            description: Array.isArray(doc.description) ? doc.description[0] : doc.description,
+            image: doc.image,
+            source: doc.source,
+            relevance: doc.relevance,
+        }));
+
+        res.status(200).json({ recommendations });
+    } catch (error) {
+        console.error('Error fetching recommendations from Solr:', error.message);
+        if (error.response) {
+            console.error('Solr Error Response:', error.response.data);
+            return res.status(500).json({ error: 'Error fetching recommendations', details: error.response.data });
+        }
+        res.status(500).json({ error: 'Server error', details: error.message });
+    }
+});
+
+
 // Schedule scraping every hour using node-cron
 cron.schedule('0 */12 * * *', async () => {
     console.log('Scheduled scraping started...');
