@@ -407,7 +407,7 @@ app.get('/api/fetchRecommendations', async (req, res) => {
 
 
 // Schedule scraping every hour using node-cron
-cron.schedule('0 */12 * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
     console.log('Scheduled scraping started...');
     await scrapeWebsites();
     await syncMongoWithSolr();

@@ -62,7 +62,7 @@ const Header = () => {
               {loading
                 ? 'Loading...'
                 : weather
-                ? `${weather.current.temp_c}°C`
+                ? `${parseInt(weather.current.temp_c, 10)}°C`
                 : 'N/A'}
             </div>
           </div>

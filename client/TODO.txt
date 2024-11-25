@@ -1,4 +1,3 @@
 - create card when you click on the search to search the actual result
 - autocomplere when search ?
 - save the indexing when modified 
-- remove decimal notation from the weather
