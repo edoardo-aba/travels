@@ -82,7 +82,7 @@ async function scrape1(url) {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
 
         const title = await page.$eval('h1.activity__title', el => el.textContent.trim());
-        const description = await page.$eval('[data-test-id="activity-full-description-text"]', el => el.textContent.trim());
+        const description = await page.$eval('[data-test-id=" -full-description-text"]', el => el.textContent.trim());
         const image = await page.$eval('meta[property="og:image"]', el => el.getAttribute('content'));
 
         await browser.close();
