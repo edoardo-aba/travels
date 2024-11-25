@@ -7,7 +7,7 @@ const Header = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [emoji, setEmoji] = useState('☀️'); // Default emoji
   const location = 'Lugano'; // Example location
-  // const API_KEY = '529f8c2b26454e05b4a231358242211'; 
+  const API_KEY = '529f8c2b26454e05b4a231358242211'; 
 
   // Function to map weather conditions to emojis
   const getWeatherEmoji = (condition) => {
