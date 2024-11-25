@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Header.css';
 
@@ -7,7 +7,9 @@ const Header = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [emoji, setEmoji] = useState('☀️'); // Default emoji
   const location = 'Lugano'; // Example location
-  const API_KEY = '529f8c2b26454e05b4a231358242211'; 
+  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+
+
 
   // Function to map weather conditions to emojis
   const getWeatherEmoji = (condition) => {
@@ -16,14 +18,18 @@ const Header = () => {
     const lowerCondition = condition.toLowerCase();
   
     // Match common weather conditions
-    if (lowerCondition.includes('sunny')) return '☀️'; 
-    if (lowerCondition.includes('clear')) return '🌙'; // "Clear" -> Night emoji
-    if (lowerCondition.includes('cloud')) return '☁️'; 
-    if (lowerCondition.includes('rain')) return '🌧️'; 
-    if (lowerCondition.includes('snow')) return '❄️'; 
-    if (lowerCondition.includes('storm') || lowerCondition.includes('thunder')) return '⛈️'; 
-    if (lowerCondition.includes('fog') || lowerCondition.includes('mist')) return '🌫️'; 
-  
+    if (lowerCondition.includes('sunny')) return '☀️'; // Sunny weather
+    if (lowerCondition.includes('clear')) return '🌙'; // Clear skies (Night emoji)
+    if (lowerCondition.includes('cloud')) return '☁️'; // Cloudy weather
+    if (lowerCondition.includes('partly sunny')) return '⛅'; // Partly sunny
+    if (lowerCondition.includes('rain')) return '🌧️'; // Rainy weather
+    if (lowerCondition.includes('drizzle')) return '🌦️'; // Light rain/drizzle
+    if (lowerCondition.includes('snow')) return '❄️'; // Snowy weather
+    if (lowerCondition.includes('storm') || lowerCondition.includes('thunder')) return '⛈️'; // Stormy weather
+    if (lowerCondition.includes('fog') || lowerCondition.includes('mist')) return '🌫️'; // Foggy or misty weather
+    if (lowerCondition.includes('wind') || lowerCondition.includes('breeze')) return '🌬️'; // Windy weather
+    if (lowerCondition.includes('hail')) return '🌨️'; // Hail
+
     return '🌍'; // Default if no match
   };
 
