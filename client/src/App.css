@@ -1,24 +1,21 @@
-html {
+html, body {
   height: 100%;
-}
-
-body {
   margin: 0;
   font-family: Arial, sans-serif;
-  transition: background 0.5s ease-in-out; /* Smooth transition for background changes */
+  transition: background 0.5s ease-in-out;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-/* Background when no search has been performed */
+/* When no search is performed, a random background image is set inline */
 body.image-background {
-  background-image: url('https://img.freepik.com/free-vector/pastel-pink-purple-gradient-blur-background_53876-115211.jpg');
-  background-size: cover; /* Ensures the image covers the entire background */
-  background-position: center; /* Centers the image */
-  background-repeat: no-repeat; /* Prevents tiling of the image */
+  /* The background is now set inline in the component */
 }
 
-/* Background after search */
+/* After search */
 body.white-background {
-  background-color: white; /* Changes background to white */
+  background-color: white;
 }
 
 .main-container {
@@ -40,6 +37,7 @@ body.white-background {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+  border-right: 1px solid #ccc;
 }
 
 .image-grid {
@@ -55,24 +53,17 @@ body.white-background {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.wrapper, .image-wrapper {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  border-right: 1px solid #ccc;
-}
-
-/* Hide the scrollbar for WebKit browsers */
+/* Hide scrollbars */
 .wrapper::-webkit-scrollbar,
 .image-wrapper::-webkit-scrollbar {
-  width: 0; /* Hide scrollbar by setting its width to 0 */
-  height: 0; /* For horizontal scrollbars (if any) */
+  width: 0; 
+  height: 0;
 }
 
 .wrapper,
 .image-wrapper {
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
-  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Loader Styles */
@@ -85,24 +76,20 @@ body.white-background {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-  z-index: 1000; /* Ensure the loader is on top of other elements */
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1000;
 }
 
 .loader {
-  border: 8px solid #f3f3f3; /* Light gray */
-  border-top: 8px solid #3498db; /* Blue */
+  border: 8px solid #f3f3f3; 
+  border-top: 8px solid #3498db;
   border-radius: 50%;
   width: 60px;
   height: 60px;
-  animation: spin 1s linear infinite; /* Add spin animation */
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
