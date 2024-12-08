@@ -80,3 +80,65 @@ If you need custom schema fields (if using non-managed schema), ensure fields li
    - Sync the data with the Solr `websites` core.
 
 
+
+
+# How to Run the Frontend (React) and Set Up the Environment
+
+## Prerequisites
+
+- **Node.js and npm/yarn**:  
+  Ensure you have Node.js and a package manager (npm or yarn) installed.
+  ```bash
+  node -v
+  npm -v
+  # or
+  yarn -v
+  ```
+
+- **Backend Server**:  
+  The frontend expects a backend running at `http://localhost:3000`.  
+  Make sure the server is running before starting the frontend.  
+  See the previous instructions for running the backend.
+
+## Environment Variables
+
+The frontend uses a `.env` file for configuration. The following variables should be set in `.env` at the root of your React project:
+
+```env
+REACT_APP_BASE_URL_REQUEST=http://localhost:3000
+VITE_WEATHER_API_KEY=your_key_from_OpenWeatherMap
+```
+
+
+## Installation and Running the Frontend
+
+1. **Install Dependencies**:
+   In your React project directory:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+2. **Start the Development Server**:
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
+   
+   The app will typically run on `http://localhost:3000` by default for CRA of for Vite at `http://localhost:5173` by default .  
+   If that clashes with your backend port, CRA might prompt you to run on a different port (e.g., `http://localhost:3001`).  
+   Make sure your `REACT_APP_BASE_URL_REQUEST` in `.env` points to where the backend is running (often `http://localhost:3000` for the backend and `http://localhost:3001` for the frontend if ports overlap).
+
+   If using Vite:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+
+
+
+
