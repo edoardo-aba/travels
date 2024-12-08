@@ -1,133 +1,125 @@
-```markdown
+
 # How to Run the Server and Set Up the Environment
 
 ## Prerequisites
 
-- **Node.js and npm**: Ensure you have Node.js (>=14) and npm installed.  
-  You can verify by running:
+- **Node.js and npm**:  
+  Check if Node.js and npm are installed:
   ```bash
   node -v
   npm -v
   ```
-  If not installed, follow the instructions at [Node.js official website](https://nodejs.org).
+  If not installed, follow instructions at [Node.js official website](https://nodejs.org).
 
-- **MongoDB**: Ensure you have a running MongoDB instance.  
-  For local development, you can run MongoDB on the default port `27017`.  
-  Make sure it is accessible via `mongodb://localhost:27017`.
+- **MongoDB**:  
+  Ensure you have a running MongoDB instance, accessible at `mongodb://localhost:27017`.
+  You can start a local MongoDB server or use a hosted MongoDB instance.
 
-- **Solr**: A running Apache Solr instance with a core named `websites`.  
-  - Download and install Solr from [the Apache Solr website](https://solr.apache.org).  
-  - Start Solr:
-    ```bash
-    bin/solr start
-    ```
-  - Create a new core named `websites`:
-    ```bash
-    bin/solr create -c websites
-    ```
-  The server expects Solr to be running at `http://localhost:8983/solr/websites`.
+- **Solr**:  
+  Make sure Apache Solr is installed and running.  
+  Instructions (simplified):
+  ```bash
+  # Start Solr (assuming you've downloaded and extracted it)
+  bin/solr start
 
-- **Chromium/Chrome**: Puppeteer will need a Chromium/Chrome browser.  
-  Puppeteer usually downloads Chromium automatically, but ensure your environment supports headless browsing.
+  # Create a core named 'websites'
+  bin/solr create -c websites
+  ```
+  Solr will be accessible at `http://localhost:8983/solr/`.  
+  The `websites` core should be at `http://localhost:8983/solr/websites`.
+
+- **Chromium/Chrome**:  
+  Puppeteer (used for scraping) requires Chromium. It will usually download it automatically, but ensure your system supports headless Chrome.
 
 ## MongoDB Setup
 
-1. **Database and Collection:**
-   - The server code connects to the database named `window`:
-     ```javascript
-     mongoose.connect('mongodb://localhost:27017/window')
-     ```
-   - Once connected, it will automatically create and use the `websites` collection when documents are inserted.  
-   
-   In summary:
-   - **Database Name:** `window`
-   - **Collection Name:** `websites` (automatically created by Mongoose when data is inserted)
+The code connects to:
+```javascript
+mongoose.connect('mongodb://localhost:27017/window')
+```
+This will use the `window` database. The `websites` collection is automatically created when data is inserted. You don’t need to manually create the collection.
 
-   No manual creation of the collection is strictly required. If you wish to verify, you can do so via the MongoDB shell or a tool like `mongosh`:
-   ```bash
-   mongosh
-   use window
-   db.getCollection('websites').find()
-   ```
+If you'd like to verify, connect to MongoDB and check:
+```bash
+mongosh
+use window
+db.websites.find()
+```
 
 ## Solr Setup
 
-1. **Ensure Solr is Running and Create the `websites` Core:**
+1. Start Solr:
    ```bash
    bin/solr start
+   ```
+2. Create the `websites` core:
+   ```bash
    bin/solr create -c websites
    ```
-   
-2. **Check the Core:**
-   Access `http://localhost:8983/solr/#/websites` in your browser to ensure the `websites` core is created successfully.
+3. Confirm that `websites` core is available at `http://localhost:8983/solr/#/websites`.
 
-3. **Schema and Fields:**
-   The code expects fields like `title`, `description`, `image`, `source`, and `relevance`.  
-   If using the default managed schema, these fields can be dynamically created.  
-   Otherwise, ensure these fields are defined in `websites` schema as `text_general` for textual fields and `int` for numeric fields.  
-   
-   Example field definitions (if needed):
-   ```xml
-   <field name="title" type="text_general" indexed="true" stored="true"/>
-   <field name="description" type="text_general" indexed="true" stored="true"/>
-   <field name="image" type="string" indexed="false" stored="true"/>
-   <field name="source" type="string" indexed="false" stored="true"/>
-   <field name="relevance" type="int" indexed="true" stored="true"/>
-   ```
+If you need custom schema fields (if using non-managed schema), ensure fields like `title`, `description`, `image`, `source`, and `relevance` are defined. Otherwise, Solr’s default managed schema should handle dynamic fields.
 
 ## Installation and Running the Server
 
-1. **Install Dependencies:**
-   In the root directory of the project (where your `package.json` is located), run:
+1. **Install dependencies** in the project folder (where `package.json` and `index.js` are located):
    ```bash
    npm install
    ```
 
-2. **Run the Server:**
-   Once all dependencies are installed, start the server with:
+2. **Run the server**:
    ```bash
-   node app.js
+   node index.js
    ```
-   or if you have a start script defined in `package.json`:
-   ```bash
-   npm start
-   ```
+   The server runs on `http://localhost:3000`.
 
-   The server will start on port `3000` by default:
-   ```
-   Server running on http://localhost:3000
-   ```
+   On startup, it will:
+   - Scrape the predefined websites.
+   - Store the scraped data in MongoDB.
+   - Sync the data with the Solr `websites` core.
 
-## What the Server Does
+## Functionality
 
-- **Scraping Websites:** On startup, it scrapes predefined URLs using Puppeteer, extracting `title`, `description`, and `image`.
-- **Storing Data in MongoDB:** The scraped data is stored in the `window` database under the `websites` collection.
-- **Synchronizing with Solr:** After scraping, the data is synced to the `websites` Solr core.
-- **Search Endpoint:** The `/api/search` endpoint allows you to search documents stored in Solr.  
-  Example query:
+- **Scraping:**  
+  The server uses Puppeteer to scrape data (title, description, image) from predefined URLs.
+
+- **Data Storage (MongoDB):**  
+  Data is stored in the `window` database, `websites` collection.
+
+- **Solr Sync:**  
+  After scraping, documents are pushed to Solr, allowing for full-text search and ranking.
+
+- **Search Endpoint:**
   ```bash
   curl "http://localhost:3000/api/search?text=barolo"
   ```
-- **Feedback Endpoint:** The `/api/feedback` endpoint allows you to adjust the `relevance` of a document.  
-  Example:
+  Replace `barolo` with your search query. Returns relevant results from Solr.
+
+- **Feedback Endpoint:**
+  Adjust the `relevance` of a document:
   ```bash
   curl -X POST "http://localhost:3000/api/feedback" \
-  -H "Content-Type: application/json" \
-  -d '{"documentId": "YOUR_DOC_ID", "feedbackType": "positive"}'
+    -H "Content-Type: application/json" \
+    -d '{"documentId": "YOUR_DOC_ID", "feedbackType": "positive"}'
   ```
-- **Fetching Recommendations:** The `/api/fetchRecommendations` endpoint returns documents from Solr, sorted by relevance.
+  Use `positive` or `negative` feedback types.
 
-## Scheduling
-
-- The code uses `node-cron` to schedule a scraping job every day at midnight:
-  ```cron
-  0 0 * * *
+- **Fetch All Recommendations:**
+  ```bash
+  curl "http://localhost:3000/api/fetchRecommendations"
   ```
-  This will re-scrape and re-sync data daily.
+  Returns documents sorted by relevance from Solr.
+
 
 ## Summary
 
-- Make sure MongoDB and Solr are running and properly set up.
-- Run `npm install` then `npm start`.
-- The server will scrape websites, store data in MongoDB, sync to Solr, and provide search and feedback endpoints.
-```
+1. Start MongoDB and Solr.
+2. 
+```bash
+  npm install
+  ```
+```bash
+  npm start
+  ```
+4. Access endpoints at `http://localhost:3000`.
+5. Data is scraped, stored in MongoDB, and searchable via Solr.
