@@ -69,7 +69,8 @@ If you need custom schema fields (if using non-managed schema), ensure fields li
 
 2. **Run the server**:
    ```bash
-   node index.js
+   npm install
+   npm start or node index.js
    ```
    The server runs on `http://localhost:3000`.
 
@@ -78,48 +79,4 @@ If you need custom schema fields (if using non-managed schema), ensure fields li
    - Store the scraped data in MongoDB.
    - Sync the data with the Solr `websites` core.
 
-## Functionality
 
-- **Scraping:**  
-  The server uses Puppeteer to scrape data (title, description, image) from predefined URLs.
-
-- **Data Storage (MongoDB):**  
-  Data is stored in the `window` database, `websites` collection.
-
-- **Solr Sync:**  
-  After scraping, documents are pushed to Solr, allowing for full-text search and ranking.
-
-- **Search Endpoint:**
-  ```bash
-  curl "http://localhost:3000/api/search?text=barolo"
-  ```
-  Replace `barolo` with your search query. Returns relevant results from Solr.
-
-- **Feedback Endpoint:**
-  Adjust the `relevance` of a document:
-  ```bash
-  curl -X POST "http://localhost:3000/api/feedback" \
-    -H "Content-Type: application/json" \
-    -d '{"documentId": "YOUR_DOC_ID", "feedbackType": "positive"}'
-  ```
-  Use `positive` or `negative` feedback types.
-
-- **Fetch All Recommendations:**
-  ```bash
-  curl "http://localhost:3000/api/fetchRecommendations"
-  ```
-  Returns documents sorted by relevance from Solr.
-
-
-## Summary
-
-1. Start MongoDB and Solr.
-2. 
-```bash
-  npm install
-  ```
-```bash
-  npm start
-  ```
-4. Access endpoints at `http://localhost:3000`.
-5. Data is scraped, stored in MongoDB, and searchable via Solr.
